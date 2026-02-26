@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: manuscript-magic-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./backend:/app
+      - ./backend/tmp:/app/tmp
+    command: python app.py
+    networks:
+      - manuscript-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: manuscript-magic-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - manuscript-network
+
+networks:
+  manuscript-network:
+    driver: bridge
+
+volumes:
+  backend_tmp:

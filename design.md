@@ -30,7 +30,8 @@ The architecture is designed for horizontal scalability, with stateless processi
 - **AI Tier**: Dedicated GPU instances for model inference (optional, CPU fallback available)
 
 
-## 2. System Components
+## 2. System Components 
+
 
 ### 2.1 Input Layer
 
