@@ -1,0 +1,63 @@
+
+{
+  "name": "ieee",
+  "description": "IEEE Standard Format",
+  "font": "Times New Roman",
+  "font_size": 10,
+  "line_spacing": 1.0,
+  "paragraph_spacing": 6,
+  "margins": {
+    "top": 0.75,
+    "bottom": 0.75,
+    "left": 0.75,
+    "right": 0.75
+  },
+  "section_styles": {
+    "title": {
+      "size": 14,
+      "bold": true,
+      "alignment": "center"
+    },
+    "Abstract": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "Introduction": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "Methodology": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "Results": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "Discussion": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "Conclusion": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    },
+    "References": {
+      "size": 10,
+      "bold": true,
+      "italic": false
+    }
+  },
+  "reference_format": "[#] Author(s), \"Title,\" Journal, vol. X, no. Y, pp. Z-W, Month Year.",
+  "features": {
+    "numbered_sections": true,
+    "numbered_references": true,
+    "single_column": false
+  }
+}
