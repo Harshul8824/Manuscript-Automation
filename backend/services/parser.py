@@ -18,7 +18,7 @@ Requirements:
 import re
 import json
 from pathlib import Path
-from typing import Any
+from typing import Union,Any
 
 from docx import Document
 from docx.text.paragraph import Paragraph
@@ -180,7 +180,7 @@ class DocumentParser:
         content = parser.extract_all()
     """
 
-    def __init__(self, filepath: str | Path):
+    def __init__(self, filepath: Union[str, Path]):
         self.filepath = Path(filepath)
         if not self.filepath.is_file():
             raise FileNotFoundError(f"Document not found: {self.filepath}")
