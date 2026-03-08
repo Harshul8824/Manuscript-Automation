@@ -1,63 +1,429 @@
-
 {
-  "name": "ieee",
-  "description": "IEEE Standard Format",
-  "font": "Times New Roman",
-  "font_size": 10,
-  "line_spacing": 1.0,
-  "paragraph_spacing": 6,
-  "margins": {
-    "top": 0.75,
-    "bottom": 0.75,
-    "left": 0.75,
-    "right": 0.75
+  "_meta": {
+    "source": "IEEE Conference Template - A4",
+    "downloaded_from": "ieee.org official template",
+    "page_size_standard": "ISO A4",
+    "notes": "Identical to Letter template in all style rules. Only page dimensions and sponsor text-box Y position differ.",
+    "version": "2.0",
+    "changelog": "v2.0 — Added zone_layout block for 4-zone sectPr architecture. Fixed columns.gap_pt from 36 to 18 (360 twips). Fixed abstract.italic to false at style level. Added word_style_name and style_id_to_word_style_map."
   },
-  "section_styles": {
-    "title": {
-      "size": 14,
-      "bold": true,
-      "alignment": "center"
+  "page_layout": {
+    "page_size": "a4",
+    "width_pt": 595.3,
+    "height_pt": 841.9,
+    "width_inches": 8.27,
+    "height_inches": 11.69,
+    "page_w_twips": 11906,
+    "page_h_twips": 16838,
+    "page_code": 9,
+    "gutter_twips": 0,
+    "doc_grid_line_pitch": 360,
+    "margins": {
+      "top_pt": 54,
+      "bottom_pt": 72,
+      "left_pt": 44.65,
+      "right_pt": 44.65,
+      "header_pt": 36,
+      "footer_pt": 36,
+      "gutter_pt": 0
     },
-    "Abstract": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "Introduction": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "Methodology": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "Results": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "Discussion": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "Conclusion": {
-      "size": 10,
-      "bold": true,
-      "italic": false
-    },
-    "References": {
-      "size": 10,
-      "bold": true,
-      "italic": false
+    "columns": {
+      "count": 2,
+      "gap_pt": 18,
+      "gap_twips": 360,
+      "gap_inches": 0.25
     }
   },
-  "reference_format": "[#] Author(s), \"Title,\" Journal, vol. X, no. Y, pp. Z-W, Month Year.",
-  "features": {
-    "numbered_sections": true,
-    "numbered_references": true,
-    "single_column": false
+  "zone_layout": {
+    "_notes": "IEEE A4 uses continuous section breaks with changing column counts: Zone1 (1-col) for title and authors. Zone2 (2-col or table) for affiliations. Zone3/body (2-col) for abstract, keywords, sections, tables, acknowledgments, references.",
+    "zone1_title": {
+      "cols": 1,
+      "top_margin_pt": 54.0,
+      "left_pt": 44.65,
+      "right_pt": 44.65,
+      "bottom_pt": 72.0,
+      "header_pt": 36.0,
+      "footer_pt": 36.0,
+      "gap_twips": 720,
+      "page_w_twips": 11906,
+      "page_h_twips": 16838,
+      "section_type": "continuous",
+      "notes": "No w:type element — defaults to nextPage. Full-width single column for paper title and author names only.",
+      "content": [
+        "paper_title",
+        "author"
+      ]
+    },
+    "zone2_affiliations": {
+      "cols": 2,
+      "top_margin_pt": 54.0,
+      "left_pt": 44.65,
+      "right_pt": 44.65,
+      "bottom_pt": 72.0,
+      "header_pt": 36.0,
+      "footer_pt": 36.0,
+      "gap_twips": 720,
+      "page_w_twips": 11906,
+      "page_h_twips": 16838,
+      "section_type": "continuous",
+      "notes": "Affiliations typically in 2-column or centered table layout with superscripts linking to authors.",
+      "content": [
+        "author",
+        "affiliation"
+      ]
+    },
+    "zone3_body": {
+      "cols": 2,
+      "top_margin_pt": 54.0,
+      "left_pt": 45.35,
+      "right_pt": 45.35,
+      "bottom_pt": 72.0,
+      "header_pt": 36.0,
+      "footer_pt": 36.0,
+      "gap_twips": 360,
+      "page_w_twips": 11906,
+      "page_h_twips": 16838,
+      "section_type": "continuous",
+      "notes": "2-column section starting from abstract onward (continuous break after affiliations).",
+      "content": [
+        "abstract",
+        "keywords",
+        "body_sections",
+        "acknowledgment",
+        "references"
+      ]
+    }
+  },
+  "default_font": {
+    "family": "Times New Roman",
+    "size_pt": 10,
+    "size_halfpt": 20,
+    "note": "10pt is IEEE standard body size — inherited from theme"
+  },
+  "styles": {
+    "paper_title": {
+      "style_id": "papertitle",
+      "word_style_name": "paper title",
+      "font": "Times New Roman",
+      "size_pt": 24,
+      "size_halfpt": 48,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "center",
+      "space_before_pt": 0,
+      "space_after_pt": 6,
+      "first_line_indent_pt": 0,
+      "kern_halfpt": 48,
+      "notes": "A4 version adds kerning (kern=48 half-pts). Spans full width above 2-col body. Text must be UPPERCASE."
+    },
+    "author": {
+      "style_id": "Author",
+      "word_style_name": "Author",
+      "font": "Times New Roman",
+      "size_pt": 11,
+      "size_halfpt": 22,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "center",
+      "space_before_pt": 18,
+      "space_after_pt": 2,
+      "notes": "Used for author name lines. CENTER aligned."
+    },
+    "affiliation": {
+      "style_id": "Affiliation",
+      "word_style_name": "Affiliation",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "size_halfpt": 20,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "center",
+      "space_before_pt": 0,
+      "space_after_pt": 0,
+      "notes": "Affiliation lines below author names. Separate style from Author."
+    },
+    "abstract": {
+      "style_id": "Abstract",
+      "word_style_name": "Abstract",
+      "font": "Times New Roman",
+      "size_pt": 9,
+      "size_halfpt": 18,
+      "bold": true,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 24.0,
+      "space_after_pt": 10,
+      "first_line_indent_pt": 13.6,
+      "notes": "Style-level italic=false. The 'Abstract—' prefix run is bold+italic at run level only. Do not apply italic to the style itself."
+    },
+    "keywords": {
+      "style_id": "Keywords",
+      "word_style_name": "Keywords",
+      "font": "Times New Roman",
+      "size_pt": 9,
+      "size_halfpt": 18,
+      "bold": false,
+      "italic": true,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 0,
+      "space_after_pt": 6,
+      "first_line_indent_pt": 13.7,
+      "notes": "The 'Index Terms—' prefix run is bold+italic at run level. Remainder of keywords text is italic only."
+    },
+    "heading1": {
+      "style_id": "Heading1",
+      "word_style_name": "Heading 1",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": false,
+      "small_caps": true,
+      "alignment": "center",
+      "space_before_pt": 8,
+      "space_after_pt": 4,
+      "first_line_indent_pt": 0,
+      "numbering": "roman_upper",
+      "numbering_tab_pt": 10.8,
+      "keep_next": true,
+      "keep_lines": true,
+      "outline_level": 0,
+      "example": "I. INTRODUCTION"
+    },
+    "heading2": {
+      "style_id": "Heading2",
+      "word_style_name": "Heading 2",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": true,
+      "small_caps": false,
+      "alignment": "left",
+      "space_before_pt": 6,
+      "space_after_pt": 3,
+      "first_line_indent_pt": 0,
+      "numbering": "alpha_upper",
+      "keep_next": true,
+      "keep_lines": true,
+      "outline_level": 1,
+      "example": "A. Subheading"
+    },
+    "heading3": {
+      "style_id": "Heading3",
+      "word_style_name": "Heading 3",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": true,
+      "small_caps": false,
+      "alignment": "both",
+      "line_spacing_pt": 12,
+      "line_spacing_rule": "exact",
+      "first_line_indent_pt": 14.4,
+      "outline_level": 2
+    },
+    "heading4": {
+      "style_id": "Heading4",
+      "word_style_name": "Heading 4",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": true,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 2,
+      "space_after_pt": 2,
+      "first_line_indent_pt": 25.2,
+      "outline_level": 3
+    },
+    "heading5": {
+      "style_id": "Heading5",
+      "word_style_name": "Heading 5",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": false,
+      "small_caps": true,
+      "alignment": "center",
+      "space_before_pt": 8,
+      "space_after_pt": 4,
+      "first_line_indent_pt": 0,
+      "outline_level": 4,
+      "notes": "Used for Acknowledgment section heading."
+    },
+    "body_text": {
+      "style_id": "BodyText",
+      "word_style_name": "Body Text",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 0,
+      "space_after_pt": 6,
+      "line_spacing_pt": 11.4,
+      "line_spacing_rule": "auto",
+      "first_line_indent_pt": 14.4,
+      "character_spacing": -1
+    },
+    "bullet_list": {
+      "style_id": "bulletlist",
+      "word_style_name": "bullet list",
+      "font": "Times New Roman",
+      "size_pt": 10,
+      "based_on": "BodyText",
+      "alignment": "both",
+      "indent_left_pt": 28.8,
+      "hanging_indent_pt": 14.4
+    },
+    "equation": {
+      "style_id": "equation",
+      "word_style_name": "equation",
+      "font": "Symbol",
+      "size_pt": 10,
+      "alignment": "left",
+      "space_before_pt": 12,
+      "space_after_pt": 12,
+      "line_spacing_pt": 10.8,
+      "line_spacing_rule": "auto"
+    },
+    "figure_caption": {
+      "style_id": "figurecaption",
+      "word_style_name": "figure caption",
+      "font": "Times New Roman",
+      "size_pt": 8,
+      "size_halfpt": 16,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 4,
+      "space_after_pt": 10,
+      "first_line_indent_pt": 0,
+      "left_indent_pt": 0,
+      "format": "Fig. {n}. Caption text."
+    },
+    "table_head": {
+      "style_id": "tablehead",
+      "word_style_name": "table head",
+      "font": "Times New Roman",
+      "size_pt": 8,
+      "size_halfpt": 16,
+      "bold": false,
+      "italic": false,
+      "small_caps": true,
+      "alignment": "center",
+      "space_before_pt": 12,
+      "space_after_pt": 6,
+      "line_spacing_pt": 10.8,
+      "line_spacing_rule": "auto",
+      "format": "TABLE {roman}. Table Title",
+      "notes": "Table title ABOVE the table. Small caps. Roman numeral. Strip existing 'Table N:' prefix from source caption before prepending."
+    },
+    "table_col_head": {
+      "style_id": "tablecolhead",
+      "word_style_name": "table col head",
+      "font": "Times New Roman",
+      "size_pt": 8,
+      "size_halfpt": 16,
+      "bold": true,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "center"
+    },
+    "table_col_subhead": {
+      "style_id": "tablecolsubhead",
+      "word_style_name": "table col subhead",
+      "font": "Times New Roman",
+      "size_pt": 7,
+      "size_halfpt": 14,
+      "bold": false,
+      "italic": true,
+      "small_caps": false,
+      "alignment": "center"
+    },
+    "table_body": {
+      "style_id": "tablecopy",
+      "word_style_name": "table copy",
+      "font": "Times New Roman",
+      "size_pt": 8,
+      "size_halfpt": 16,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "both"
+    },
+    "references": {
+      "style_id": "references",
+      "word_style_name": "references",
+      "font": "Times New Roman",
+      "size_pt": 8,
+      "size_halfpt": 16,
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "alignment": "both",
+      "space_before_pt": 0,
+      "space_after_pt": 2.5,
+      "line_spacing_pt": 9,
+      "line_spacing_rule": "exact",
+      "indent_left_pt": 17.7,
+      "hanging_indent_pt": 17.7,
+      "citation_style": "IEEE",
+      "citation_format": "[{n}] A. Author, \"Title,\" Journal, vol. X, pp. XX-XX, Year."
+    }
+  },
+  "section_order": [
+    "paper_title",
+    "author",
+    "affiliation",
+    "abstract",
+    "keywords",
+    "body_sections",
+    "acknowledgment",
+    "references"
+  ],
+  "numbering": {
+    "heading1_style": "roman_upper",
+    "heading2_style": "alpha_upper",
+    "figure_label": "Fig.",
+    "table_label": "TABLE",
+    "table_numbering": "roman_upper",
+    "equation_label": "parentheses_arabic",
+    "reference_label": "brackets_arabic"
+  },
+  "style_id_to_word_style_map": {
+    "paper_title": "paper title",
+    "author": "Author",
+    "affiliation": "Affiliation",
+    "abstract": "Abstract",
+    "keywords": "Keywords",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "heading4": "Heading 4",
+    "heading5": "Heading 5",
+    "body_text": "Body Text",
+    "bullet_list": "bullet list",
+    "equation": "equation",
+    "figure_caption": "figure caption",
+    "table_head": "table head",
+    "table_col_head": "table col head",
+    "table_col_subhead": "table col subhead",
+    "table_body": "table copy",
+    "references": "references"
+  },
+  "difference_from_letter": {
+    "page_width_pt": 595.3,
+    "page_height_pt": 841.9,
+    "page_w_twips": 11906,
+    "page_h_twips": 16838,
+    "paper_title_kerning": "Added kern=48 half-pts on A4 version only",
+    "all_styles": "Identical to Letter version — only page dimensions and title kerning differ"
   }
 }

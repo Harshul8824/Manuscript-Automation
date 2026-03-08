@@ -1,7 +1,7 @@
 # 📄 ManuscriptMagic
 ### AI-Driven Manuscript Formatting Automation
 
-> Transform raw research drafts into publication-ready documents in minutes — powered by Claude AI, Python, and React.
+> Transform raw research drafts into publication-ready documents in minutes — powered by a large language model (via the GROQ API), Python, and React.
 
 ---
 
@@ -143,7 +143,7 @@ Raw DOCX Uploaded
         │
         ▼
   2. CLASSIFIER (classifier.py)
-     - Sends paragraphs to Claude API
+     - Sends paragraphs to a language model (GROQ API)
      - Identifies: title, authors, abstract,
        section headings, body, references
      - Hybrid: rule-based first, AI for ambiguous cases
@@ -238,7 +238,7 @@ manuscript-magic/
 - Node.js v18+
 - Python 3.10+
 - pip
-- An Anthropic API key ([get one here](https://console.anthropic.com))
+- A GROQ API key (obtain from your GROQ/xAI account)
 
 ---
 
@@ -266,7 +266,7 @@ pip install -r requirements.txt
 
 # Create environment file
 cp .env.example .env
-# Then open .env and add your ANTHROPIC_API_KEY
+# Then open .env and add your GROQ_API_KEY
 ```
 
 **Start Flask development server:**
@@ -551,15 +551,15 @@ Templates are stored as JSON configuration files in `backend/templates/`. Each f
 
 ## Cost Analysis
 
-### Anthropic API (Per Document)
+### Language-model API (Per Document)
 
-| Document Size | Claude API Tokens | Estimated Cost |
+| Document Size | Model Tokens | Estimated Cost |
 |---|---|---|
 | Short paper (6–8 pages) | ~3,000 tokens | ~$0.003 |
 | Standard paper (10–15 pages) | ~6,000 tokens | ~$0.006 |
 | Long paper (25–30 pages) | ~12,000 tokens | ~$0.012 |
 
-Using `claude-haiku` model for classification (fastest, cheapest tier).
+Using a small/efficient LLM model (e.g. groq‑gpt‑3.5‑mini) for classification.
 
 ### AWS Infrastructure (Monthly)
 
@@ -576,7 +576,7 @@ Using `claude-haiku` model for classification (fastest, cheapest tier).
 
 | Approach | Setup Cost | Per-Doc Cost | Accuracy | Feasibility |
 |---|---|---|---|---|
-| Claude API (current) | $0 | ~$0.006 | 92–95% | ✅ High |
+| LLM API (current) | $0 | ~$0.006 | 92–95% | ✅ High |
 | Rule-based only | $0 | $0.00 | 70–80% | ✅ High |
 | Hybrid (rule + API) | $0 | ~$0.003 | 90–94% | ✅ High |
 | Fine-tuned BERT | $100–200 GPU | $0 | 88–92% | ⚠️ Medium |

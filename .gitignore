@@ -27,6 +27,10 @@ yarn-error.log
 *.tmp
 .DS_Store
 
+#folders
+__pycache__/
+template/
+
 # IDE
 .vscode/
 .idea/
