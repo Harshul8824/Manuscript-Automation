@@ -295,7 +295,8 @@ class DocumentParser:
             text = self._clean_text(raw_text)
             
             # Bug 4 Fix: Blocklist filter
-            if text.upper() in _ARTIFACT_BLOCKLIST:
+            text_upper = text.upper()
+            if text_upper in _ARTIFACT_BLOCKLIST or any(b in text_upper for b in ["END OF DOCUMENT", "END OF PAPER"]):
                 continue
 
             # SAFE STYLE ACCESS: para.style can be None in some documents
@@ -825,20 +826,27 @@ class DocumentParser:
             if len(words) < 25:
                 return "figure_caption"
 
-        # ── Rule 13: Author name heuristic ──
-        # FIX: two distinct sub-checks ordered safest-first.
-        #
-        # 13a. Superscript-prefixed line → definitely affiliation, not author.
+        # ── Rule 13: Title heuristic (large bold centered text) ──
+        # Evaluated before Author/Affiliation because Titles are structurally distinct
+        # and may contain affiliation-like words (e.g. "MULTI-CENTER CLINICAL STUDY").
+        if (
+            font_size is not None and font_size >= 14
+            and alignment == "center"
+            and is_bold
+            and len(text_stripped.split()) <= 25
+        ):
+            return "title"
+
+        # ── Rule 14: Author name heuristic ──
+        # 14a. Superscript-prefixed line → definitely affiliation, not author.
         if _AFF_SUPERSCRIPT_START_RE.match(text_stripped):
             return "affiliation"
-        #
-        # 13b. Email → affiliation.
+        
+        # 14b. Email → affiliation.
         if _EMAIL_RE.search(text_stripped):
             return "affiliation"
-        #
-        # 13c. Title-Case name-only line with optional trailing superscripts.
-        #      e.g. "Rahul Sharma¹"  "John A. Smith²"
-        #      Guard: must be ≤ 7 words and not contain affiliation signals.
+        
+        # 14c. Title-Case name-only line with optional trailing superscripts.
         if (
             _AUTHOR_NAME_RE.match(text_stripped)
             and len(text_stripped.split()) <= 7
@@ -846,18 +854,13 @@ class DocumentParser:
         ):
             return "author"
 
-        # ── Rule 14: Affiliation heuristic ──
+        # 14d. Explicit author list format with titles/numbers/commas
+        if self._looks_like_author_list(text_stripped) and not self._looks_like_affiliation(text):
+            return "author"
+
+        # ── Rule 15: Affiliation heuristic ──
         if self._looks_like_affiliation(text):
             return "affiliation"
-
-        # ── Rule 15: Title heuristic (large bold centered text) ──
-        if (
-            font_size is not None and font_size >= 14
-            and alignment == "center"
-            and is_bold
-            and len(text_stripped.split()) <= 20
-        ):
-            return "title"
 
         # ── Rule 13-legacy: Centered, short, no affiliation signals → author ──
         # Kept as a low-priority fallback only; real authors caught by Rule 13c above.
@@ -891,9 +894,17 @@ class DocumentParser:
                 text = p.get("caps_content") or p["text"]
                 if text.strip().upper() in {"AUTHORS", "AUTHOR"}:
                     continue
-                name, _ = self._split_author_affiliation(text)
-                if name and name not in authors:
-                    authors.append(name)
+                
+                # If it's a comma separated author list, split and add all
+                if self._looks_like_author_list(text):
+                    for part in text.split(','):
+                        clean_part = part.strip()
+                        if clean_part and clean_part not in authors:
+                            authors.append(clean_part)
+                else:
+                    name, _ = self._split_author_affiliation(text)
+                    if name and name not in authors:
+                        authors.append(name)
         return authors
 
     def _find_affiliations(self, paragraphs: list[dict]) -> list[str]:
@@ -1412,6 +1423,27 @@ class DocumentParser:
             if word in _AFFILIATION_WORD_SIGNALS:
                 return True
 
+        return False
+
+    def _looks_like_author_list(self, text_stripped: str) -> bool:
+        """Heuristic to catch comma-separated author lists, especially those in ALL CAPS with titles."""
+        words = text_stripped.split()
+        if len(words) > 30 or len(words) < 2: 
+            return False
+            
+        # 1. Contains a standard title like DR., PROF.
+        if re.search(r"\b(DR\.|PROF\.|MR\.|MS\.|MRS\.|PHD)\b", text_stripped, re.IGNORECASE):
+            return True
+            
+        # 2. Contains trailing superscripts/numbers attached to a capitalized word (e.g., SHARMA1, Doe³)
+        if re.search(r"\b[A-Z][a-zA-Z]*[\u00b9\u00b2\u00b3\u00b4\u2070-\u2079\u207a-\u207f1-9]+(?:,|$)", text_stripped):
+            return True
+            
+        # 3. List of comma separated Title Case names
+        _TITLE_CASE_AUTHOR = r"(?:[A-Z][a-z]+(?:\s+[A-Z]\.?)?(?:\s+[A-Z][a-z]+)+)[\u00b9\u00b2\u00b3\u00b4\u2070-\u2079\u207a-\u207f]*"
+        if re.match(rf"^{_TITLE_CASE_AUTHOR}(?:\s*(?:,|and|&)\s*{_TITLE_CASE_AUTHOR})*$", text_stripped):
+            return True
+            
         return False
 
 

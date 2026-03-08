@@ -1,0 +1,2930 @@
+{
+  "metadata": {
+    "source_file": "raw_test_manuscript_DR_study.docx",
+    "paragraph_count": 89,
+    "valid_paragraphs": 89,
+    "invalid_paragraphs": 0,
+    "total_violations": 0,
+    "timestamp": "2026-03-08T19:19:01.381544"
+  },
+  "title": "NOVEL APPROACHES TO DEEP LEARNING-BASED AUTOMATED DETECTION OF DIABETIC RETINOPATHY: A MULTI-CENTER CLINICAL STUDY",
+  "authors": [
+    "Dr. Priya Sharma1¹",
+    "Dr. Amit Kumar Verma2²",
+    "Ms. Rohini Iyer1³",
+    "Prof. David Chen3⁴"
+  ],
+  "affiliations": [
+    "¹ 1Department of Ophthalmology, AIIMS New Delhi, India, 2School of Biomedical Engineering, IIT Bombay, India, 3Department of Computer Science, Stanford University, USA, Corresponding Author: priya.sharma@aiims.edu | Received: 12 Jan 2025 | Accepted: 03 Mar 2025",
+    "² 1Department of Ophthalmology, AIIMS New Delhi, India, 2School of Biomedical Engineering, IIT Bombay, India, 3Department of Computer Science, Stanford University, USA, Corresponding Author: priya.sharma@aiims.edu | Received: 12 Jan 2025 | Accepted: 03 Mar 2025",
+    "³ 1Department of Ophthalmology, AIIMS New Delhi, India, 2School of Biomedical Engineering, IIT Bombay, India, 3Department of Computer Science, Stanford University, USA, Corresponding Author: priya.sharma@aiims.edu | Received: 12 Jan 2025 | Accepted: 03 Mar 2025",
+    "⁴ 1Department of Ophthalmology, AIIMS New Delhi, India, 2School of Biomedical Engineering, IIT Bombay, India, 3Department of Computer Science, Stanford University, USA, Corresponding Author: priya.sharma@aiims.edu | Received: 12 Jan 2025 | Accepted: 03 Mar 2025"
+  ],
+  "abstract": "Diabetic retinopathy (DR) is among the leading causes of preventable blindness worldwide, affecting approximately 103 million people globally as of 2020. Despite well-established screening protocols, coverage remains critically low in low-resource settings due to shortages of trained ophthalmologists. This study presents a multi-center evaluation of a novel deep convolutional neural network (DCNN) architecture, RetinaScanNet-v2, trained on a curated dataset of 87,450 retinal fundus images from three geographically diverse populations (India, USA, and Kenya). The model achieves a sensitivity of 94.7%, specificity of 91.2%, and an AUC of 0.973 on the hold-out test set, outperforming both the baseline ResNet-50 model and human grader performance (p < 0.001) on proliferative DR detection. We further demonstrate robust generalizability across ethnically diverse populations and varying image quality conditions. This work proposes a cost-effective AI-assisted screening pipeline deployable in resource-constrained environments and discusses clinical integration pathways, regulatory considerations, and ethical implications of automated ophthalmic diagnosis.",
+  "keywords": "diabetic retinopathy, deep learning, convolutional neural network, fundus imaging, AI-assisted diagnosis, telemedicine screening",
+  "sections": [
+    {
+      "heading": "1. Introduction",
+      "content": [
+        {
+          "text": "Diabetes mellitus is a chronic metabolic disorder with a global prevalence exceeding 537 million adults in 2021 according to the International Diabetes Federation (IDF, 2021). One of its most debilitating microvascular complications, diabetic retinopathy (DR), affects nearly one-third of diabetics and remains a primary driver of acquired blindness in the working-age population. Early detection and timely laser photocoagulation or anti-VEGF therapy can reduce vision loss risk by up to 95%; however, the majority of patients in low- and middle-income countries (LMICs) are diagnosed only at advanced, often irreversible stages.",
+          "role": "body"
+        },
+        {
+          "text": "The bottleneck is structural: traditional DR screening requires a trained ophthalmologist to manually evaluate dilated-pupil fundus photographs, a process that is time-intensive, subjective, and geographically constrained. Rural India alone has an estimated deficit of 88,000 ophthalmologists, with a physician-to-patient ratio of approximately 1:70,000 in underserved districts. This creates a compelling clinical case for automated, AI-driven screening tools that can be deployed by paramedical personnel at primary health centres (PHCs).",
+          "role": "body"
+        },
+        {
+          "text": "Recent advances in deep learning — particularly convolutional neural networks (CNNs) — have demonstrated the ability to match or surpass human expert performance on specific retinal image classification tasks (Gulshan et al., 2016; Ting et al., 2017). However, critical gaps remain: (1) most published models are trained on single-centre, demographically homogeneous datasets, raising concerns about generalizability; (2) performance under degraded imaging conditions (lens opacity, motion blur, suboptimal illumination) remains poorly characterized; and (3) very few studies provide end-to-end clinical integration frameworks for real-world deployment.",
+          "role": "body"
+        },
+        {
+          "text": "This paper addresses these gaps through four primary contributions:",
+          "role": "body"
+        },
+        {
+          "text": "Development of RetinaScanNet-v2, a novel DCNN architecture incorporating attention gating and multi-scale feature fusion optimized for fundus image analysis.",
+          "role": "body"
+        },
+        {
+          "text": "Rigorous external validation demonstrating cross-population generalizability under real-world imaging conditions.",
+          "role": "body"
+        },
+        {
+          "text": "A proposed telemedicine integration pipeline with cost-benefit analysis for LMIC deployment.",
+          "role": "body"
+        },
+        {
+          "text": "The remainder of this paper is structured as follows: Section 2 reviews related work. Section 3 describes the dataset and methodology. Section 4 presents experimental results. Section 5 discusses clinical implications, and Section 6 concludes with future directions.",
+          "role": "body"
+        }
+      ]
+    },
+    {
+      "heading": "2. Related Work",
+      "content": [
+        {
+          "subheading": "2.1 Early CNN Approaches to Retinal Image Analysis",
+          "content": [
+            {
+              "text": "The landmark study by Gulshan et al. (2016) at Google was among the first to demonstrate that a deep learning algorithm trained on 128,000 retinal images from the EyePACS and Messidor-2 datasets could achieve diagnostic sensitivity of 90.3% and specificity of 98.1% for severe diabetic retinopathy, exceeding the performance of US board-certified ophthalmologists. This catalyzed a wave of subsequent research applying transfer learning from ImageNet-pretrained architectures (VGG-16, InceptionV3, ResNet-50) to fundus classification tasks.",
+              "role": "body"
+            },
+            {
+              "text": "Ting et al. (2017) extended this work to a Southeast Asian cohort of 494,661 retinal images, achieving similar performance (AUC 0.936) and additionally detecting glaucoma and age-related macular degeneration as secondary outputs. Critically, their model maintained performance across ethnically diverse subpopulations (Chinese, Indian, Malay), providing early evidence for cross-ethnic generalizability.",
+              "role": "body"
+            }
+          ]
+        },
+        {
+          "subheading": "2.2 Limitations of Existing Models",
+          "content": [
+            {
+              "text": "Despite impressive benchmark performance, several studies have identified key limitations in current AI DR detection systems:",
+              "role": "body"
+            },
+            {
+              "text": "Dataset Homogeneity: The majority of published models rely on North American or Western European datasets (e.g., EyePACS, DRIVE, STARE), which may not capture the morphological and demographic diversity of global diabetic populations.",
+              "role": "body"
+            },
+            {
+              "text": "Image Quality Sensitivity: Models trained on high-quality, clinical-grade images frequently degrade in performance when evaluated on images captured with portable, low-cost fundus cameras prevalent in LMICs (Natarajan et al., 2019).",
+              "role": "body"
+            },
+            {
+              "text": "Explainability Deficit: Black-box predictions without clinically interpretable saliency maps are a major barrier to physician trust and regulatory approval (Rudin, 2019).",
+              "role": "body"
+            },
+            {
+              "text": "Integration Gap: Few papers address the full clinical pipeline, including EHR integration, workflow disruption, and regulatory compliance.",
+              "role": "body"
+            },
+            {
+              "text": "Our work directly addresses each of these limitations, as detailed in the following sections.",
+              "role": "body"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3. MATERIALS AND METHODS",
+      "content": [
+        {
+          "subheading": "3.1 Dataset Composition and Ethics",
+          "content": [
+            {
+              "text": "This retrospective cross-sectional study was approved by the Institutional Review Boards (IRBs) of all three participating centers: AIIMS New Delhi (Ref. IEC-472/2022), Stanford University Medical Center (IRB-65210), and Kenyatta National Hospital, Nairobi (KNH-ERC/A/312). Informed consent was waived for retrospective anonymized data. The study adhered to the Declaration of Helsinki and complied with the Health Insurance Portability and Accountability Act (HIPAA) in the US context.",
+              "role": "body"
+            },
+            {
+              "text": "The final dataset comprised 87,450 color fundus photographs collected between January 2018 and December 2023 from three geographically distinct cohorts:",
+              "role": "body"
+            },
+            {
+              "text": "Table 1: Dataset Composition Across Study Centers",
+              "role": "table_caption"
+            },
+            {
+              "text": "Table 1. Summary of fundus image datasets from the three participating clinical centers. DR = Diabetic Retinopathy.",
+              "role": "table_caption"
+            }
+          ]
+        },
+        {
+          "subheading": "3.2 Image Preprocessing and Augmentation",
+          "content": [
+            {
+              "text": "All images were resized to 512 x 512 pixels and normalized using population-specific mean and standard deviation values computed separately for each clinical site to account for systematic differences in camera calibration and illumination. A standardized preprocessing pipeline was applied: (1) green channel extraction, (2) contrast-limited adaptive histogram equalization (CLAHE) with clip limit 2.0 and tile size 8x8, (3) circular ROI masking to remove uninformative black borders, and (4) Z-score normalization.",
+              "role": "body"
+            },
+            {
+              "text": "To address class imbalance (approximately 66% DR-negative images), aggressive data augmentation was applied exclusively to the training partition: random horizontal and vertical flipping (p=0.5), rotation within ±15 degrees, brightness jitter (±20%), Gaussian noise injection (sigma = 0.02), and elastic deformation. No augmentation was applied to validation or test sets.",
+              "role": "body"
+            }
+          ]
+        },
+        {
+          "subheading": "3.3 Model Architecture: RetinaScanNet-v2",
+          "content": [
+            {
+              "text": "RetinaScanNet-v2 is a modified EfficientNet-B4 backbone augmented with two key architectural innovations: (1) a dual-pathway attention gating module (AGM) inserted after each scaling stage to suppress background retinal vasculature while emphasizing microaneurysm and exudate regions; and (2) a multi-scale feature pyramid fusion (MSFPF) layer that concatenates feature maps from three intermediate scales (28x28, 14x14, 7x7) before the final classification head. The total parameter count is 21.4M, representing a 12% increase over vanilla EfficientNet-B4 while achieving disproportionate performance gains.",
+              "role": "body"
+            },
+            {
+              "text": "Loss_total = alpha * BCE(y, y_hat) + beta * Focal(y, y_hat) + gamma * Dice(y, y_hat) (Eq. 1)",
+              "role": "body"
+            },
+            {
+              "text": "where alpha=0.4, beta=0.4, gamma=0.2 were determined via hyperparameter optimization on the validation set. The focal loss component (Focal, gamma_f=2) was critical for handling residual class imbalance after augmentation.",
+              "role": "body"
+            },
+            {
+              "text": "Table 2. Training Hyperparameters and Computational Environment",
+              "role": "table_caption"
+            },
+            {
+              "text": "Table 2. Hyperparameter configuration used for all experiments. DDP = Distributed Data Parallel.",
+              "role": "table_caption"
+            }
+          ]
+        },
+        {
+          "subheading": "3.4 Grading Protocol and Ground Truth",
+          "content": [
+            {
+              "text": "Each image was graded by a minimum of two board-certified ophthalmologists using the International Clinical Diabetic Retinopathy Disease Severity Scale (ICDRSS). A five-class grading scheme was employed: No DR (0), Mild NPDR (1), Moderate NPDR (2), Severe NPDR (3), and Proliferative DR (4). In cases of disagreement (inter-rater Cohen's kappa = 0.81 overall), a senior consultant adjudicated. For primary analysis, a clinically meaningful binary classification threshold was defined: Grades 0-2 as \"Refer Not Urgent\" and Grades 3-4 as \"Refer Urgent.\"",
+              "role": "body"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "4. Results",
+      "content": [
+        {
+          "subheading": "4.1 Overall Diagnostic Performance",
+          "content": [
+            {
+              "text": "On the held-out test set (n=13,118 images, 15% stratified split), RetinaScanNet-v2 achieved a sensitivity of 94.7% (95% CI: 93.8%–95.5%), specificity of 91.2% (95% CI: 90.1%–92.3%), and an AUC of 0.973 (95% CI: 0.969–0.977) for Urgent Referral (PDR + Severe NPDR) detection. Table 3 presents a full comparison against baseline architectures and the consensus human grader panel.",
+              "role": "body"
+            },
+            {
+              "text": "Table 3: Comparative Model Performance (Test Set, n=13,118)",
+              "role": "table_caption"
+            },
+            {
+              "text": "Table 3. Comparative performance on the held-out test set. * denotes statistically significant improvement over human graders (DeLong test, p < 0.001). Confidence intervals reported in body text.",
+              "role": "body"
+            }
+          ]
+        },
+        {
+          "subheading": "4.2 Cross-Population Generalizability",
+          "content": [
+            {
+              "text": "A critical evaluation was performed by training exclusively on the AIIMS New Delhi cohort and testing on the Stanford and KNH cohorts without fine-tuning. On the Stanford external test set, RetinaScanNet-v2 achieved an AUC of 0.961 (Sensitivity 93.1%, Specificity 89.8%). On the KNH dataset, performance was AUC 0.947 (Sensitivity 91.6%, Specificity 87.4%), representing only a 2.6-point AUC degradation despite substantial domain shift in both ethnicity and imaging device. This performance is substantially superior to the baseline ResNet-50, which exhibited a 9.1-point AUC drop under the same cross-center evaluation protocol, suggesting that the AGM attention mechanism actively learns ethnicity-invariant pathological features.",
+              "role": "body"
+            }
+          ]
+        },
+        {
+          "subheading": "4.3 Performance Under Degraded Image Quality",
+          "content": [
+            {
+              "text": "To simulate real-world LMIC conditions, a synthetic degradation protocol was applied to 20% of the KNH test images: Gaussian blur (sigma=1.5), brightness reduction (50%), and salt-and-pepper noise (density=0.02). Under degraded conditions, RetinaScanNet-v2 sensitivity decreased from 91.6% to 87.2% — a 4.4% absolute reduction. The baseline ResNet-50 model showed a 14.7% absolute sensitivity reduction under identical conditions, confirming the robustness advantage of multi-scale feature fusion.",
+              "role": "body"
+            },
+            {
+              "text": "[Figure 1: ROC Curves for All Models — INSERT IMAGE HERE]",
+              "role": "body"
+            },
+            {
+              "text": "[Figure 2: Confusion Matrix Heatmaps (3 Centers) — INSERT IMAGE HERE]",
+              "role": "body"
+            },
+            {
+              "text": "Fig. 2. Confusion matrices for RetinaScanNet-v2 across the three clinical centers. Rows = actual class, Columns = predicted class. Note variable performance on Moderate NPDR (Grade 2).",
+              "role": "body"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "5. Discussion",
+      "content": [
+        {
+          "text": "The results of this study demonstrate that RetinaScanNet-v2 achieves clinically meaningful improvements in DR detection performance over both prior deep learning baselines and trained human graders, particularly for the high-stakes task of Proliferative DR identification where treatment delay is vision-threatening. The 3-point AUC advantage over the human grader panel (0.973 vs 0.958) is statistically robust and clinically significant, translating to an estimated 623 additional true positive detections per 10,000 screened patients.",
+          "role": "body"
+        },
+        {
+          "text": "Several technical factors contributed to these gains. First, the attention gating mechanism demonstrably suppresses the large-vessel retinal vasculature which constitutes a major source of visual confusion for standard CNN architectures trained without spatial attention. Gradient-weighted Class Activation Mapping (Grad-CAM) analysis confirmed that the model's salient regions closely align with expert-annotated pathological zones (microaneurysms, hard exudates, neovascularization) across all three population cohorts.",
+          "role": "body"
+        },
+        {
+          "text": "Second, the multi-center training strategy with site-specific normalization appears critical for cross-population robustness. Ablation experiments (Supplementary Table S1) show that removing site-specific normalization reduces cross-center AUC by 3.1 points, while removing the MSFPF layer reduces it by 2.4 points. The combination of both interventions accounts for the majority of the observed generalizability advantage.",
+          "role": "body"
+        },
+        {
+          "subheading": "5.1 Clinical Integration Pathway",
+          "content": [
+            {
+              "text": "We propose a three-tier telemedicine screening pipeline for LMIC deployment. At Tier 1, paramedical health workers at PHCs capture fundus images using the Remidio FOP NM (Non-Mydriatic, portable, ~$3,200 USD), which connects via Bluetooth to a smartphone running a lightweight RetinaScanNet-v2 client (TensorFlow Lite, INT8 quantized, 18MB model size). At Tier 2, the compressed model performs real-time on-device inference (<300ms on Snapdragon 888) and generates a binary referral recommendation with confidence score. At Tier 3, Refer Urgent cases are transmitted over encrypted mobile data to a regional ophthalmology hub for confirmatory evaluation and treatment planning.",
+              "role": "body"
+            },
+            {
+              "text": "A preliminary cost-effectiveness analysis based on published Indian health economics data (ICMR, 2023) suggests that deployment at scale (~5,000 PHCs) would yield a cost-per-QALY-gained of approximately INR 24,000 (~290 USD), well below WHO-CHOICE thresholds for cost-effective interventions in the Indian context (1x GDP per capita threshold = ~$2,300 USD/QALY).",
+              "role": "body"
+            }
+          ]
+        },
+        {
+          "subheading": "5.2 Limitations",
+          "content": [
+            {
+              "text": "This study has several important limitations. First, the ground truth grading, while high-quality (kappa=0.81), was performed retrospectively by ophthalmologists at each site rather than by a centralized standardized grading committee, introducing potential site-specific grading biases. Second, this retrospective validation does not constitute a prospective clinical trial; real-world implementation may encounter additional sources of variability in operator technique, patient cooperation, and environmental conditions not captured in our synthetic degradation protocol. Third, the model currently supports only fundus photography; integration with Optical Coherence Tomography (OCT) data, which provides superior sensitivity for diabetic macular edema detection, is planned but not yet validated. Fourth, the study population underrepresents type 1 diabetes patients, who may have a distinct DR progression phenotype.",
+              "role": "body"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "6. Conclusion",
+      "content": [
+        {
+          "text": "This study presents RetinaScanNet-v2, a novel deep learning architecture for diabetic retinopathy detection that achieves state-of-the-art performance (AUC 0.973) on a large, ethnically diverse multi-center dataset while demonstrating clinically meaningful robustness under real-world imaging conditions. The proposed telemedicine integration framework offers a practical and cost-effective pathway to extend specialist-quality DR screening to the estimated 140 million unscreened diabetic patients in LMICs. Future work will pursue prospective randomized evaluation across 50 PHC sites in rural India (ClinicalTrials.gov: NCT0512XXX, recruiting), OCT-fundus multimodal fusion, and federated learning approaches to enable privacy-preserving model updates across participating centers.",
+          "role": "body"
+        },
+        {
+          "text": "Code, model weights, and a subset of the anonymized dataset (10,000 images, balanced) are available at: github.com/aiims-vision-lab/retinascannet-v2 [NOTE: link not yet active — to be updated before submission]",
+          "role": "body"
+        }
+      ]
+    }
+  ],
+  "references": [
+    "Gulshan, V., Peng, L., Coram, M., Stumpe, M. C., Wu, D., Narayanaswamy, A., ... & Webster, D. R. (2016). Development and validation of a deep learning algorithm for detection of diabetic retinopathy in retinal fundus photographs. JAMA, 316(22), 2402-2410.",
+    "2. Ting DSW, Cheung CY, Lim G, Tan GSW, Quang ND, Gan A, et al. Development and validation of a deep learning system for diabetic retinopathy and related eye diseases using retinal images from multiethnic populations with diabetes. JAMA. 2017;318(22):2211-23.",
+    "[3] S. Natarajan et al., \"Diagnostic accuracy of community-based diabetic retinopathy screening with an offline artificial intelligence system on a smartphone,\" JAMA Ophthalmol., vol. 137, no. 10, pp. 1182-1188, Oct. 2019.",
+    "4. Rudin C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. Nature Machine Intelligence.",
+    "5. International Diabetes Federation. IDF Diabetes Atlas, 10th edition. Brussels, Belgium: International Diabetes Federation; 2021. Available at: http://www.diabetesatlas.org",
+    "6. ICMR. (2023). Health Technology Assessment Guidelines for Resource-Constrained Settings. Indian Council of Medical Research, New Delhi.",
+    "[7] He K, Zhang X, Ren S, Sun J. Deep residual learning for image recognition. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016:770-778.",
+    "8. Tan M, Le Q. EfficientNet: Rethinking model scaling for convolutional neural networks. In: International Conference on Machine Learning (ICML), 2019; pp. 6105–6114.",
+    "9. Gulshan V, et al. Development and validation of a deep learning algorithm for detection of diabetic retinopathy. JAMA. 2016;316(22):2402. [DUPLICATE — see Ref 1]",
+    "10. Vaswani A, Shazeer N, Parmar N, Uszkoreit J, Jones L, Gomez AN, Kaiser L, Polosukhin I. Attention is all you need. Advances in Neural Information Processing Systems (NeurIPS). 2017;30.",
+    "11. Litjens G, Kooi T, Bejnordi BE, Setio AAA, Ciompi F, Ghafoorian M, et al. A survey on deep learning in medical image analysis. Medical Image Analysis. 2017;42:60-88.",
+    "12. World Health Organization. Prevention of Blindness and Visual Impairment. Available at: https://www.who.int/blindness/en/ [Accessed January 2025].",
+    "APPENDIX A: Supplementary Data",
+    "Supplementary Table S1: Ablation Study Results",
+    "Table S1. Ablation study evaluating the contribution of each architectural component and training strategy to cross-center generalization performance. AUC reported as average across Stanford and KNH external test sets."
+  ],
+  "acknowledgments": "The authors thank the ophthalmology nursing staff at AIIMS New Delhi, particularly Ms. Kavitha Rajan and Mr. Suresh Menon, for their support in dataset curation. Computing infrastructure was provided by the National Supercomputing Mission (NSM) India under Grant No. DST/NSM/R&D_HPC_Applications/2021/03.28 and the Stanford Research Computing Center. This study received no commercial funding. The authors declare no conflicts of interest.",
+  "tables": [
+    {
+      "table_index": 0,
+      "row_count": 5,
+      "col_count": 6,
+      "has_header_row": true,
+      "rows": [
+        [
+          "Center",
+          "Country",
+          "N (Images)",
+          "Camera Type",
+          "DR Positive (%)",
+          "Ethnic Composition"
+        ],
+        [
+          "AIIMS New Delhi",
+          "India",
+          "41,200",
+          "Topcon TRC-NW400",
+          "34.7%",
+          "South Asian (98%)"
+        ],
+        [
+          "Stanford Medical Center",
+          "USA",
+          "28,750",
+          "Zeiss Visucam 500",
+          "28.1%",
+          "Mixed (Caucasian 62%, African-American 21%, Asian 17%)"
+        ],
+        [
+          "Kenyatta National Hospital",
+          "Kenya",
+          "17,500",
+          "Remidio FOP",
+          "41.3%",
+          "Sub-Saharan African (97%)"
+        ],
+        [
+          "Total / Average",
+          "3 Countries",
+          "87,450",
+          "3 Device Types",
+          "33.9%",
+          "Multi-ethnic"
+        ]
+      ],
+      "caption": "Table 1: Dataset Composition Across Study Centers"
+    },
+    {
+      "table_index": 1,
+      "row_count": 9,
+      "col_count": 2,
+      "has_header_row": false,
+      "rows": [
+        [
+          "Parameter",
+          "Value"
+        ],
+        [
+          "Optimizer",
+          "AdamW (weight_decay=1e-4)"
+        ],
+        [
+          "Learning Rate Schedule",
+          "Cosine Annealing with Warmup (5 epochs)"
+        ],
+        [
+          "Initial LR",
+          "3e-4"
+        ],
+        [
+          "Batch Size",
+          "32 (effective, gradient accumulation steps=4)"
+        ],
+        [
+          "Training Epochs",
+          "80 (early stopping, patience=10)"
+        ],
+        [
+          "GPU Environment",
+          "4x NVIDIA A100 80GB, DDP training"
+        ],
+        [
+          "Framework",
+          "PyTorch 2.0.1 + MONAI 1.2"
+        ],
+        [
+          "Total Training Time",
+          "~47 hours"
+        ]
+      ],
+      "caption": "Table 1. Summary of fundus image datasets from the three participating clinical centers. DR = Diabetic Retinopathy."
+    },
+    {
+      "table_index": 2,
+      "row_count": 6,
+      "col_count": 6,
+      "has_header_row": true,
+      "rows": [
+        [
+          "Model",
+          "Sensitivity (%)",
+          "Specificity (%)",
+          "AUC",
+          "F1-Score",
+          "Inference Time (ms)"
+        ],
+        [
+          "ResNet-50 (Baseline)",
+          "87.3",
+          "85.6",
+          "0.921",
+          "0.863",
+          "12"
+        ],
+        [
+          "EfficientNet-B4 (Pretrained)",
+          "91.4",
+          "88.7",
+          "0.951",
+          "0.897",
+          "18"
+        ],
+        [
+          "VGG-16 (Gulshan Architecture)",
+          "89.1",
+          "87.2",
+          "0.934",
+          "0.878",
+          "24"
+        ],
+        [
+          "Human Graders (Panel of 5)",
+          "91.8",
+          "89.3",
+          "0.958",
+          "0.903",
+          "N/A"
+        ],
+        [
+          "RetinaScanNet-v2 (Ours)",
+          "94.7*",
+          "91.2*",
+          "0.973*",
+          "0.928*",
+          "21"
+        ]
+      ],
+      "caption": "Table 2. Training Hyperparameters and Computational Environment"
+    },
+    {
+      "table_index": 3,
+      "row_count": 7,
+      "col_count": 4,
+      "has_header_row": false,
+      "rows": [
+        [
+          "Model Variant",
+          "Removed Component",
+          "Cross-Center AUC",
+          "Delta vs Full Model"
+        ],
+        [
+          "Full RetinaScanNet-v2",
+          "—",
+          "0.954 (avg)",
+          "Baseline"
+        ],
+        [
+          "Variant A",
+          "Remove MSFPF Layer",
+          "0.930",
+          "–2.4"
+        ],
+        [
+          "Variant B",
+          "Remove Attention Gating",
+          "0.926",
+          "–2.8"
+        ],
+        [
+          "Variant C",
+          "Remove Site Normalization",
+          "0.923",
+          "–3.1"
+        ],
+        [
+          "Variant D",
+          "Remove Focal Loss Term",
+          "0.941",
+          "–1.3"
+        ],
+        [
+          "Variant E",
+          "All Ablations (Vanilla EfficientNet-B4)",
+          "0.893",
+          "–6.1"
+        ]
+      ],
+      "caption": "Table 2. Hyperparameter configuration used for all experiments. DDP = Distributed Data Parallel."
+    }
+  ],
+  "paragraphs": [
+    {
+      "index": 0,
+      "text": "NOVEL APPROACHES TO DEEP LEARNING-BASED AUTOMATED DETECTION OF DIABETIC RETINOPATHY: A MULTI-CENTER CLINICAL STUDY",
+      "word_style_name": "Normal",
+      "parsed_style_id": "paper_title",
+      "role": "title",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 14.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 0.0,
+        "space_after_pt": 10.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 1,
+      "text": "Dr. Priya Sharma1, Dr. Amit Kumar Verma2, Ms. Rohini Iyer1, Prof. David Chen3",
+      "word_style_name": "Normal",
+      "parsed_style_id": "author",
+      "role": "author",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 2,
+      "text": "1Department of Ophthalmology, AIIMS New Delhi, India",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "affiliation",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 3,
+      "text": "2School of Biomedical Engineering, IIT Bombay, India",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "affiliation",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 4,
+      "text": "3Department of Computer Science, Stanford University, USA",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "affiliation",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 5,
+      "text": "Corresponding Author: priya.sharma@aiims.edu | Received: 12 Jan 2025 | Accepted: 03 Mar 2025",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "affiliation",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 6,
+      "text": "ABSTRACT",
+      "word_style_name": "Normal",
+      "parsed_style_id": "abstract",
+      "role": "abstract_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 7,
+      "text": "Diabetic retinopathy (DR) is among the leading causes of preventable blindness worldwide, affecting approximately 103 million people globally as of 2020. Despite well-established screening protocols, coverage remains critically low in low-resource settings due to shortages of trained ophthalmologists. This study presents a multi-center evaluation of a novel deep convolutional neural network (DCNN) architecture, RetinaScanNet-v2, trained on a curated dataset of 87,450 retinal fundus images from three geographically diverse populations (India, USA, and Kenya). The model achieves a sensitivity of 94.7%, specificity of 91.2%, and an AUC of 0.973 on the hold-out test set, outperforming both the baseline ResNet-50 model and human grader performance (p < 0.001) on proliferative DR detection. We further demonstrate robust generalizability across ethnically diverse populations and varying image quality conditions. This work proposes a cost-effective AI-assisted screening pipeline deployable in resource-constrained environments and discusses clinical integration pathways, regulatory considerations, and ethical implications of automated ophthalmic diagnosis.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 18.3,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 8,
+      "text": "Keywords: diabetic retinopathy, deep learning, convolutional neural network, fundus imaging, AI-assisted diagnosis, telemedicine screening",
+      "word_style_name": "Normal",
+      "parsed_style_id": "keywords",
+      "role": "keywords",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 9,
+      "text": "1. Introduction",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 10,
+      "text": "Diabetes mellitus is a chronic metabolic disorder with a global prevalence exceeding 537 million adults in 2021 according to the International Diabetes Federation (IDF, 2021). One of its most debilitating microvascular complications, diabetic retinopathy (DR), affects nearly one-third of diabetics and remains a primary driver of acquired blindness in the working-age population. Early detection and timely laser photocoagulation or anti-VEGF therapy can reduce vision loss risk by up to 95%; however, the majority of patients in low- and middle-income countries (LMICs) are diagnosed only at advanced, often irreversible stages.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 11,
+      "text": "The bottleneck is structural: traditional DR screening requires a trained ophthalmologist to manually evaluate dilated-pupil fundus photographs, a process that is time-intensive, subjective, and geographically constrained. Rural India alone has an estimated deficit of 88,000 ophthalmologists, with a physician-to-patient ratio of approximately 1:70,000 in underserved districts. This creates a compelling clinical case for automated, AI-driven screening tools that can be deployed by paramedical personnel at primary health centres (PHCs).",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 12,
+      "text": "Recent advances in deep learning — particularly convolutional neural networks (CNNs) — have demonstrated the ability to match or surpass human expert performance on specific retinal image classification tasks (Gulshan et al., 2016; Ting et al., 2017). However, critical gaps remain: (1) most published models are trained on single-centre, demographically homogeneous datasets, raising concerns about generalizability; (2) performance under degraded imaging conditions (lens opacity, motion blur, suboptimal illumination) remains poorly characterized; and (3) very few studies provide end-to-end clinical integration frameworks for real-world deployment.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 13,
+      "text": "This paper addresses these gaps through four primary contributions:",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 14,
+      "text": "Development of RetinaScanNet-v2, a novel DCNN architecture incorporating attention gating and multi-scale feature fusion optimized for fundus image analysis.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 15,
+      "text": "A multi-center, multi-ethnic dataset of 87,450 annotated fundus images spanning India, USA, and Kenya.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "affiliation",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 16,
+      "text": "Rigorous external validation demonstrating cross-population generalizability under real-world imaging conditions.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 17,
+      "text": "A proposed telemedicine integration pipeline with cost-benefit analysis for LMIC deployment.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 18,
+      "text": "The remainder of this paper is structured as follows: Section 2 reviews related work. Section 3 describes the dataset and methodology. Section 4 presents experimental results. Section 5 discusses clinical implications, and Section 6 concludes with future directions.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 19,
+      "text": "2. Related Work",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 20,
+      "text": "2.1 Early CNN Approaches to Retinal Image Analysis",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 21,
+      "text": "The landmark study by Gulshan et al. (2016) at Google was among the first to demonstrate that a deep learning algorithm trained on 128,000 retinal images from the EyePACS and Messidor-2 datasets could achieve diagnostic sensitivity of 90.3% and specificity of 98.1% for severe diabetic retinopathy, exceeding the performance of US board-certified ophthalmologists. This catalyzed a wave of subsequent research applying transfer learning from ImageNet-pretrained architectures (VGG-16, InceptionV3, ResNet-50) to fundus classification tasks.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 22,
+      "text": "Ting et al. (2017) extended this work to a Southeast Asian cohort of 494,661 retinal images, achieving similar performance (AUC 0.936) and additionally detecting glaucoma and age-related macular degeneration as secondary outputs. Critically, their model maintained performance across ethnically diverse subpopulations (Chinese, Indian, Malay), providing early evidence for cross-ethnic generalizability.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 23,
+      "text": "2.2 Limitations of Existing Models",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 24,
+      "text": "Despite impressive benchmark performance, several studies have identified key limitations in current AI DR detection systems:",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 25,
+      "text": "Dataset Homogeneity: The majority of published models rely on North American or Western European datasets (e.g., EyePACS, DRIVE, STARE), which may not capture the morphological and demographic diversity of global diabetic populations.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 26,
+      "text": "Image Quality Sensitivity: Models trained on high-quality, clinical-grade images frequently degrade in performance when evaluated on images captured with portable, low-cost fundus cameras prevalent in LMICs (Natarajan et al., 2019).",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 27,
+      "text": "Explainability Deficit: Black-box predictions without clinically interpretable saliency maps are a major barrier to physician trust and regulatory approval (Rudin, 2019).",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 28,
+      "text": "Integration Gap: Few papers address the full clinical pipeline, including EHR integration, workflow disruption, and regulatory compliance.",
+      "word_style_name": "List Paragraph",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 29,
+      "text": "Our work directly addresses each of these limitations, as detailed in the following sections.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 30,
+      "text": "3. MATERIALS AND METHODS",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 31,
+      "text": "3.1 Dataset Composition and Ethics",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 32,
+      "text": "This retrospective cross-sectional study was approved by the Institutional Review Boards (IRBs) of all three participating centers: AIIMS New Delhi (Ref. IEC-472/2022), Stanford University Medical Center (IRB-65210), and Kenyatta National Hospital, Nairobi (KNH-ERC/A/312). Informed consent was waived for retrospective anonymized data. The study adhered to the Declaration of Helsinki and complied with the Health Insurance Portability and Accountability Act (HIPAA) in the US context.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 33,
+      "text": "The final dataset comprised 87,450 color fundus photographs collected between January 2018 and December 2023 from three geographically distinct cohorts:",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 34,
+      "text": "Table 1: Dataset Composition Across Study Centers",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "table_caption",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 6.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 35,
+      "text": "Table 1. Summary of fundus image datasets from the three participating clinical centers. DR = Diabetic Retinopathy.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "table_caption",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "left",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 36,
+      "text": "3.2 Image Preprocessing and Augmentation",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 37,
+      "text": "All images were resized to 512 x 512 pixels and normalized using population-specific mean and standard deviation values computed separately for each clinical site to account for systematic differences in camera calibration and illumination. A standardized preprocessing pipeline was applied: (1) green channel extraction, (2) contrast-limited adaptive histogram equalization (CLAHE) with clip limit 2.0 and tile size 8x8, (3) circular ROI masking to remove uninformative black borders, and (4) Z-score normalization.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 38,
+      "text": "To address class imbalance (approximately 66% DR-negative images), aggressive data augmentation was applied exclusively to the training partition: random horizontal and vertical flipping (p=0.5), rotation within ±15 degrees, brightness jitter (±20%), Gaussian noise injection (sigma = 0.02), and elastic deformation. No augmentation was applied to validation or test sets.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 39,
+      "text": "3.3 Model Architecture: RetinaScanNet-v2",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 40,
+      "text": "RetinaScanNet-v2 is a modified EfficientNet-B4 backbone augmented with two key architectural innovations: (1) a dual-pathway attention gating module (AGM) inserted after each scaling stage to suppress background retinal vasculature while emphasizing microaneurysm and exudate regions; and (2) a multi-scale feature pyramid fusion (MSFPF) layer that concatenates feature maps from three intermediate scales (28x28, 14x14, 7x7) before the final classification head. The total parameter count is 21.4M, representing a 12% increase over vanilla EfficientNet-B4 while achieving disproportionate performance gains.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 41,
+      "text": "Loss_total = alpha * BCE(y, y_hat) + beta * Focal(y, y_hat) + gamma * Dice(y, y_hat) (Eq. 1)",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Courier New",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 6.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": true,
+        "runs": [
+          {
+            "run_index": 1,
+            "text": "     (Eq. 1)",
+            "font_name": "Times New Roman",
+            "size_pt": 11.0,
+            "bold": true,
+            "italic": false
+          }
+        ]
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 42,
+      "text": "where alpha=0.4, beta=0.4, gamma=0.2 were determined via hyperparameter optimization on the validation set. The focal loss component (Focal, gamma_f=2) was critical for handling residual class imbalance after augmentation.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 43,
+      "text": "Table 2. Training Hyperparameters and Computational Environment",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "table_caption",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 6.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 44,
+      "text": "Table 2. Hyperparameter configuration used for all experiments. DDP = Distributed Data Parallel.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "table_caption",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "left",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 45,
+      "text": "3.4 Grading Protocol and Ground Truth",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 46,
+      "text": "Each image was graded by a minimum of two board-certified ophthalmologists using the International Clinical Diabetic Retinopathy Disease Severity Scale (ICDRSS). A five-class grading scheme was employed: No DR (0), Mild NPDR (1), Moderate NPDR (2), Severe NPDR (3), and Proliferative DR (4). In cases of disagreement (inter-rater Cohen's kappa = 0.81 overall), a senior consultant adjudicated. For primary analysis, a clinically meaningful binary classification threshold was defined: Grades 0-2 as \"Refer Not Urgent\" and Grades 3-4 as \"Refer Urgent.\"",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 47,
+      "text": "4. Results",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 48,
+      "text": "4.1 Overall Diagnostic Performance",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 49,
+      "text": "On the held-out test set (n=13,118 images, 15% stratified split), RetinaScanNet-v2 achieved a sensitivity of 94.7% (95% CI: 93.8%–95.5%), specificity of 91.2% (95% CI: 90.1%–92.3%), and an AUC of 0.973 (95% CI: 0.969–0.977) for Urgent Referral (PDR + Severe NPDR) detection. Table 3 presents a full comparison against baseline architectures and the consensus human grader panel.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 50,
+      "text": "Table 3: Comparative Model Performance (Test Set, n=13,118)",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "table_caption",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 6.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 51,
+      "text": "Table 3. Comparative performance on the held-out test set. * denotes statistically significant improvement over human graders (DeLong test, p < 0.001). Confidence intervals reported in body text.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "left",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 52,
+      "text": "4.2 Cross-Population Generalizability",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 53,
+      "text": "A critical evaluation was performed by training exclusively on the AIIMS New Delhi cohort and testing on the Stanford and KNH cohorts without fine-tuning. On the Stanford external test set, RetinaScanNet-v2 achieved an AUC of 0.961 (Sensitivity 93.1%, Specificity 89.8%). On the KNH dataset, performance was AUC 0.947 (Sensitivity 91.6%, Specificity 87.4%), representing only a 2.6-point AUC degradation despite substantial domain shift in both ethnicity and imaging device. This performance is substantially superior to the baseline ResNet-50, which exhibited a 9.1-point AUC drop under the same cross-center evaluation protocol, suggesting that the AGM attention mechanism actively learns ethnicity-invariant pathological features.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 54,
+      "text": "4.3 Performance Under Degraded Image Quality",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 55,
+      "text": "To simulate real-world LMIC conditions, a synthetic degradation protocol was applied to 20% of the KNH test images: Gaussian blur (sigma=1.5), brightness reduction (50%), and salt-and-pepper noise (density=0.02). Under degraded conditions, RetinaScanNet-v2 sensitivity decreased from 91.6% to 87.2% — a 4.4% absolute reduction. The baseline ResNet-50 model showed a 14.7% absolute sensitivity reduction under identical conditions, confirming the robustness advantage of multi-scale feature fusion.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 56,
+      "text": "[Figure 1: ROC Curves for All Models — INSERT IMAGE HERE]",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Courier New",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 10.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 57,
+      "text": "[Figure 2: Confusion Matrix Heatmaps (3 Centers) — INSERT IMAGE HERE]",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Courier New",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "center",
+        "space_before_pt": 10.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 58,
+      "text": "Fig. 2. Confusion matrices for RetinaScanNet-v2 across the three clinical centers. Rows = actual class, Columns = predicted class. Note variable performance on Moderate NPDR (Grade 2).",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "left",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 59,
+      "text": "5. Discussion",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 60,
+      "text": "The results of this study demonstrate that RetinaScanNet-v2 achieves clinically meaningful improvements in DR detection performance over both prior deep learning baselines and trained human graders, particularly for the high-stakes task of Proliferative DR identification where treatment delay is vision-threatening. The 3-point AUC advantage over the human grader panel (0.973 vs 0.958) is statistically robust and clinically significant, translating to an estimated 623 additional true positive detections per 10,000 screened patients.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 61,
+      "text": "Several technical factors contributed to these gains. First, the attention gating mechanism demonstrably suppresses the large-vessel retinal vasculature which constitutes a major source of visual confusion for standard CNN architectures trained without spatial attention. Gradient-weighted Class Activation Mapping (Grad-CAM) analysis confirmed that the model's salient regions closely align with expert-annotated pathological zones (microaneurysms, hard exudates, neovascularization) across all three population cohorts.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 62,
+      "text": "Second, the multi-center training strategy with site-specific normalization appears critical for cross-population robustness. Ablation experiments (Supplementary Table S1) show that removing site-specific normalization reduces cross-center AUC by 3.1 points, while removing the MSFPF layer reduces it by 2.4 points. The combination of both interventions accounts for the majority of the observed generalizability advantage.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 63,
+      "text": "5.1 Clinical Integration Pathway",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 64,
+      "text": "We propose a three-tier telemedicine screening pipeline for LMIC deployment. At Tier 1, paramedical health workers at PHCs capture fundus images using the Remidio FOP NM (Non-Mydriatic, portable, ~$3,200 USD), which connects via Bluetooth to a smartphone running a lightweight RetinaScanNet-v2 client (TensorFlow Lite, INT8 quantized, 18MB model size). At Tier 2, the compressed model performs real-time on-device inference (<300ms on Snapdragon 888) and generates a binary referral recommendation with confidence score. At Tier 3, Refer Urgent cases are transmitted over encrypted mobile data to a regional ophthalmology hub for confirmatory evaluation and treatment planning.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 65,
+      "text": "A preliminary cost-effectiveness analysis based on published Indian health economics data (ICMR, 2023) suggests that deployment at scale (~5,000 PHCs) would yield a cost-per-QALY-gained of approximately INR 24,000 (~290 USD), well below WHO-CHOICE thresholds for cost-effective interventions in the Indian context (1x GDP per capita threshold = ~$2,300 USD/QALY).",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 66,
+      "text": "5.2 Limitations",
+      "word_style_name": "Heading 2",
+      "parsed_style_id": "heading2",
+      "role": "sub_heading",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 10.0,
+        "space_after_pt": 4.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 67,
+      "text": "This study has several important limitations. First, the ground truth grading, while high-quality (kappa=0.81), was performed retrospectively by ophthalmologists at each site rather than by a centralized standardized grading committee, introducing potential site-specific grading biases. Second, this retrospective validation does not constitute a prospective clinical trial; real-world implementation may encounter additional sources of variability in operator technique, patient cooperation, and environmental conditions not captured in our synthetic degradation protocol. Third, the model currently supports only fundus photography; integration with Optical Coherence Tomography (OCT) data, which provides superior sensitivity for diabetic macular edema detection, is planned but not yet validated. Fourth, the study population underrepresents type 1 diabetes patients, who may have a distinct DR progression phenotype.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 68,
+      "text": "6. Conclusion",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 69,
+      "text": "This study presents RetinaScanNet-v2, a novel deep learning architecture for diabetic retinopathy detection that achieves state-of-the-art performance (AUC 0.973) on a large, ethnically diverse multi-center dataset while demonstrating clinically meaningful robustness under real-world imaging conditions. The proposed telemedicine integration framework offers a practical and cost-effective pathway to extend specialist-quality DR screening to the estimated 140 million unscreened diabetic patients in LMICs. Future work will pursue prospective randomized evaluation across 50 PHC sites in rural India (ClinicalTrials.gov: NCT0512XXX, recruiting), OCT-fundus multimodal fusion, and federated learning approaches to enable privacy-preserving model updates across participating centers.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 70,
+      "text": "Code, model weights, and a subset of the anonymized dataset (10,000 images, balanced) are available at: github.com/aiims-vision-lab/retinascannet-v2 [NOTE: link not yet active — to be updated before submission]",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 71,
+      "text": "Acknowledgements",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 72,
+      "text": "The authors thank the ophthalmology nursing staff at AIIMS New Delhi, particularly Ms. Kavitha Rajan and Mr. Suresh Menon, for their support in dataset curation. Computing infrastructure was provided by the National Supercomputing Mission (NSM) India under Grant No. DST/NSM/R&D_HPC_Applications/2021/03.28 and the Stanford Research Computing Center. This study received no commercial funding. The authors declare no conflicts of interest.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "body_text",
+      "role": "body",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 12.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 3.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 36.0,
+        "line_spacing_pt": 24.0,
+        "line_spacing_rule": "auto"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 73,
+      "text": "References",
+      "word_style_name": "Normal",
+      "parsed_style_id": "heading1",
+      "role": "section_heading",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 15.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 74,
+      "text": "Gulshan, V., Peng, L., Coram, M., Stumpe, M. C., Wu, D., Narayanaswamy, A., ... & Webster, D. R. (2016). Development and validation of a deep learning algorithm for detection of diabetic retinopathy in retinal fundus photographs. JAMA, 316(22), 2402-2410.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 75,
+      "text": "2. Ting DSW, Cheung CY, Lim G, Tan GSW, Quang ND, Gan A, et al. Development and validation of a deep learning system for diabetic retinopathy and related eye diseases using retinal images from multiethnic populations with diabetes. JAMA. 2017;318(22):2211-23.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 76,
+      "text": "[3] S. Natarajan et al., \"Diagnostic accuracy of community-based diabetic retinopathy screening with an offline artificial intelligence system on a smartphone,\" JAMA Ophthalmol., vol. 137, no. 10, pp. 1182-1188, Oct. 2019.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 77,
+      "text": "4. Rudin C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. Nature Machine Intelligence.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 78,
+      "text": "5. International Diabetes Federation. IDF Diabetes Atlas, 10th edition. Brussels, Belgium: International Diabetes Federation; 2021. Available at: http://www.diabetesatlas.org",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 79,
+      "text": "6. ICMR. (2023). Health Technology Assessment Guidelines for Resource-Constrained Settings. Indian Council of Medical Research, New Delhi.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 80,
+      "text": "[7] He K, Zhang X, Ren S, Sun J. Deep residual learning for image recognition. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016:770-778.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 81,
+      "text": "8. Tan M, Le Q. EfficientNet: Rethinking model scaling for convolutional neural networks. In: International Conference on Machine Learning (ICML), 2019; pp. 6105–6114.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 82,
+      "text": "9. Gulshan V, et al. Development and validation of a deep learning algorithm for detection of diabetic retinopathy. JAMA. 2016;316(22):2402. [DUPLICATE — see Ref 1]",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 83,
+      "text": "10. Vaswani A, Shazeer N, Parmar N, Uszkoreit J, Jones L, Gomez AN, Kaiser L, Polosukhin I. Attention is all you need. Advances in Neural Information Processing Systems (NeurIPS). 2017;30.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 84,
+      "text": "11. Litjens G, Kooi T, Bejnordi BE, Setio AAA, Ciompi F, Ghafoorian M, et al. A survey on deep learning in medical image analysis. Medical Image Analysis. 2017;42:60-88.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 85,
+      "text": "12. World Health Organization. Prevention of Blindness and Visual Impairment. Available at: https://www.who.int/blindness/en/ [Accessed January 2025].",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": false,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 2.0,
+        "space_after_pt": 2.0,
+        "first_line_indent_pt": -36.0,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 86,
+      "text": "APPENDIX A: Supplementary Data",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 13.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 0.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 87,
+      "text": "Supplementary Table S1: Ablation Study Results",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Times New Roman",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "small_caps": false,
+        "alignment": "both",
+        "space_before_pt": 6.0,
+        "space_after_pt": 3.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    },
+    {
+      "index": 88,
+      "text": "Table S1. Ablation study evaluating the contribution of each architectural component and training strategy to cross-center generalization performance. AUC reported as average across Stanford and KNH external test sets.",
+      "word_style_name": "Normal",
+      "parsed_style_id": "references",
+      "role": "reference",
+      "ooxml_properties": {
+        "font_name": "Calibri",
+        "size_pt": 9.0,
+        "bold": false,
+        "italic": true,
+        "small_caps": false,
+        "alignment": "left",
+        "space_before_pt": 2.0,
+        "space_after_pt": 6.0,
+        "first_line_indent_pt": 14.4,
+        "line_spacing_pt": 11.4,
+        "line_spacing_rule": "multiple"
+      },
+      "run_level_overrides": {
+        "has_mixed_formatting": false,
+        "runs": []
+      },
+      "is_valid": true,
+      "violations": {},
+      "spec_properties": {}
+    }
+  ],
+  "violation_summary": {
+    "by_property": {},
+    "by_style": {}
+  },
+  "job_id": "5ef13720",
+  "source_file": "raw_test_manuscript_DR_study.docx"
+}

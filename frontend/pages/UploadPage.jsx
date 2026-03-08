@@ -140,13 +140,39 @@ export default function UploadPage() {
     setValidationError(null);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedFile || isUploading) return;
     setIsUploading(true);
-    setTimeout(() => {
+    setValidationError(null);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/documents/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
       setIsUploading(false);
-      navigate("/analysis", { state: { fileName: selectedFile.name, fileSize: selectedFile.size } });
-    }, 1800);
+
+      navigate("/analysis", {
+        state: {
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
+          jobId: data.job_id
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      setValidationError("Upload failed. Make sure the Flask backend is running on port 5000.");
+      setIsUploading(false);
+    }
   };
 
   const fileName = selectedFile?.name || "";

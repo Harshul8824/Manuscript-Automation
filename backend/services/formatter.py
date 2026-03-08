@@ -472,9 +472,9 @@ class TemplateFormatter:
 
         p = self.doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.paragraph_format.space_before = Pt(cfg.get("space_before_pt", 8))
-        p.paragraph_format.space_after  = Pt(cfg.get("space_after_pt", 4))
-        p.paragraph_format.keep_next = cfg.get("keep_next", True)
+        p.paragraph_format.space_before    = Pt(cfg.get("space_before_pt", 8))
+        p.paragraph_format.space_after     = Pt(cfg.get("space_after_pt", 4))
+        p.paragraph_format.keep_with_next  = cfg.get("keep_next", True)
 
         run = p.add_run(heading_text)
         run.font.name = font_name
@@ -544,10 +544,10 @@ class TemplateFormatter:
 
                 p = self.doc.add_paragraph()
                 p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                p.paragraph_format.space_before = Pt(h2_cfg.get("space_before_pt", 6))
-                p.paragraph_format.space_after  = Pt(h2_cfg.get("space_after_pt", 3))
+                p.paragraph_format.space_before     = Pt(h2_cfg.get("space_before_pt", 6))
+                p.paragraph_format.space_after      = Pt(h2_cfg.get("space_after_pt", 3))
                 p.paragraph_format.first_line_indent = Pt(h2_cfg.get("first_line_indent_pt", 0))
-                p.paragraph_format.keep_next = h2_cfg.get("keep_next", True)
+                p.paragraph_format.keep_with_next   = h2_cfg.get("keep_next", True)
 
                 run = p.add_run(heading_text)
                 run.font.name = h2_font
@@ -683,9 +683,9 @@ class TemplateFormatter:
             
             p_cap = self.doc.add_paragraph()
             p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_cap.paragraph_format.space_before = Pt(12)
-            p_cap.paragraph_format.space_after = Pt(6)
-            p_cap.paragraph_format.keep_next = True
+            p_cap.paragraph_format.space_before   = Pt(12)
+            p_cap.paragraph_format.space_after    = Pt(6)
+            p_cap.paragraph_format.keep_with_next = True
 
             # Label (TABLE I.) - Bold
             run_label = p_cap.add_run(f"TABLE {self._roman(idx+1)}. ")

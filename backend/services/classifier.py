@@ -80,7 +80,14 @@ class ContentClassifier:
         """
         Calls Groq with primary model; retries once with fallback model on failure.
         Returns a dict of {paragraph_index: new_role, ...} plus internal keys.
+        If no GROQ_API_KEY is configured, runs in no-LLM mode and returns
+        an empty corrections dict with fallback metadata.
         """
+        # No-LLM fallback: run without external API instead of raising
+        if not getattr(self, "_api_key", None):
+            logger.warning("GROQ_API_KEY missing; skipping LLM classification (no-LLM mode).")
+            return {"_fallback": True, "_model_used": None}
+
         for model in (_MODEL_PRIMARY, _MODEL_FALLBACK):
             try:
                 prompt = self._build_prompt(ambiguous, all_paras)
@@ -368,10 +375,18 @@ Empty example:    {{}}
         return corrected, changes
 
     def _load_api_key(self, env_path=None):
-        load_dotenv()
+        # Prefer an explicit env_path if provided, otherwise fall back to default
+        if env_path:
+            load_dotenv(env_path)
+        else:
+            load_dotenv()
+
         key = os.getenv("GROQ_API_KEY")
         if not key:
-            raise EnvironmentError("GROQ_API_KEY not found in .env")
+            logger.warning("GROQ_API_KEY not found in environment; running classifier in no-LLM mode.")
+            self._api_key = None
+            return
+
         self._api_key = key
 
     @staticmethod
