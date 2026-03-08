@@ -1,1 +1,0 @@
-"""Api endpoints for document management."""

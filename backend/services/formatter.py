@@ -1,1 +1,0 @@
-""" Formatter service to format documents. """
