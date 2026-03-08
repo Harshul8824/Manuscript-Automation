@@ -17,7 +17,8 @@
  * ============================================================
  */
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import StatsRow from "./StatsRow";
@@ -151,11 +152,13 @@ document.head.appendChild(globalStyle);
 // it just places them in order. This is React's superpower.
 // ══════════════════════════════════════════════════════════════
 export default function LandingPage() {
-  // 🎓 This state will eventually navigate to the Upload page.
-  // For now it just scrolls to top (we'll wire routing later).
-  const handleStartClick = () => {
-    alert("🚀 Navigate to Upload Page — we'll wire this in Step 2!");
-  };
+  const navigate = useNavigate();
+
+  // 🎓 useNavigate: navigate programmatically to a route.
+  // Get Started now takes the user to the Upload page (Screen 2).
+  const handleStartClick = useCallback(() => {
+    navigate("/upload");
+  }, [navigate]);
 
   return (
     // 🎓 JSX Rule: A component must return ONE root element.
